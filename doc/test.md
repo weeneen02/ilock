@@ -1,7 +1,7 @@
 1. Test code:
     
     ```C
-    \#include test.c
+    #include<stdio.h>
     int main(int ~~~)
     ```
 
