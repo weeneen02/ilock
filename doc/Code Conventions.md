@@ -2,7 +2,7 @@
 <link type="text/css" rel="stylesheet" media="screen" href="./style.css">
 
 #Code conventions
-*Alterplay 2012*
+*Ilock Hanium 2016*
 
 ###Table of contents
 
@@ -17,7 +17,7 @@
 
 <h2 id="overview">1. Overview</h2>
 
-This Code Conventions (CC) document contains standard conventions that we at Alterplay follow and recommend that others follow.
+This Code Conventions (CC) document contains standard conventions that we at Ilock Hanium follow and recommend that others follow.
 It covers filenames, file organization, indentation, comments, declarations, statements, white space, naming conventions, programming practices and includes some code examples.
 
 ###1.1. Some reasons for following conventions
