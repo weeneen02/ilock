@@ -2,7 +2,9 @@
 
 
 1. System Diagram
-
+   
+    * This is the Picture our system.
+    ![beetle](/img/Blunobeetle.png)
 
 
 
