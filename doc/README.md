@@ -28,14 +28,16 @@
     * AT Commands  
 
     1. "AT+FSM" change the working mode  
-    AT+FSM=FSM_TRANS_USB_COM_BLE<CR+LF> USB-UART BLE transparent mode  
-    AT+FSM=FSM_HID_USB_COM_BLE_AT<CR+LF>    USB-UART BLE HID mode  
-    AT+FSM=?<CR+LF> Request the working mode (default: FSM_TRANS_USB_COM_BLE)  
+    AT+FSM=FSM_TRANS_USB_COM_BLE<CR+LF>| USB-UART BLE transparent mode  
+    -----------------------------------|-------------------------------
+    AT+FSM=FSM_HID_USB_COM_BLE_AT<CR+LF>| USB-UART BLE HID mode  
+    AT+FSM=?<CR+LF>| Request the working mode (default: FSM_TRANS_USB_COM_BLE)  
 
     1. "AT+KEY" to simulate pressing some buttons in HID mode, read FAQ 16 below for How to use HID mode.  
-    AT+KEY=keyValue0<CR+LF> To simulate one button was pressed  
-    AT+KEY=keyValue0+keyValue1<CR+LF>   To simulate two buttons was pressed  
-    AT+KEY=keyValue0+keyValue1+keyValue2<CR+LF> To simulate three buttons was pressed  
+    AT+KEY=keyValue0<CR+LF>|To simulate one button was pressed  
+    -----------------------|----------------------------------
+    AT+KEY=keyValue0+keyValue1<CR+LF>|To simulate two buttons was pressed  
+    AT+KEY=keyValue0+keyValue1+keyValue2<CR+LF>|To simulate three buttons was pressed  
 
     1. "AT+ROLE" change the CENTRAL-PERIPHERAL configuration  
     AT+ROLE=ROLE_CENTRAL<CR+LF> BLE CENTRAL mode  
