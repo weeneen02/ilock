@@ -36,9 +36,9 @@
 
     1. "AT+FSM" change the working mode
     
-        AT+FSM=FSM_TRANS_USB_COM_BLE<CR+LF>     USB-UART BLE transparent mode
-        AT+FSM=FSM_HID_USB_COM_BLE_AT<CR+LF>    USB-UART BLE HID mode
-        AT+FSM=?<CR+LF>                         Request the working mode (default: FSM_TRANS_USB_COM_BLE)
+        AT+FSM=FSM_TRANS_USB_COM_BLE<CR+LF>|USB-UART BLE transparent mode
+        AT+FSM=FSM_HID_USB_COM_BLE_AT<CR+LF>|USB-UART BLE HID mode
+        AT+FSM=?<CR+LF>|Request the working mode (default: FSM_TRANS_USB_COM_BLE)
 
     1. "AT+KEY" to simulate pressing some buttons in HID mode, read FAQ 16 below for How to use HID mode.
 
