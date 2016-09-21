@@ -1,7 +1,7 @@
-### ILOCK
+# ILOCK
 
 
-1. System Diagram
+1. ### System Diagram
    
     * This is the Picture our system.
     ![beetle](/img/Blunobeetle.png)
