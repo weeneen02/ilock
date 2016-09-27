@@ -1,14 +1,9 @@
 # ILOCK
 
-
 1. ### System Diagram
    
     * This is the Picture our system.
     ![beetle](/img/Blunobeetle.png)
-
-
-
-
 
 
 1. ### SomeThing We should know.
@@ -23,7 +18,6 @@
                     I am not sure but, is the reason why I(Central) got the massage
                     from your(Peripheral) vertically?
                     and your(Peripheral) got the massage horizontally?
-
 
     * AT Commands  
 
@@ -145,7 +139,6 @@
     how to communicate between them
 
     2. How to code AT commands on the sketch in Arduino IDE?
-
 
 
 
