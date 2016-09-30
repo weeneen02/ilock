@@ -1,12 +1,27 @@
 # ILOCK
 
-1. ### System Diagram
-   
+###Table of contents
+
+1. [System Diagram](#system diagram)
+1. [Something We should know](#know)
+1. [Issues](#issues)
+1. [References](#references)
+
+<h2 id="system diagram">System Diagram</h2>
+
+> It's about the system of ilock.
+
     * This is the Picture our system.
     ![beetle](/img/Blunobeetle.png)
 
+    * This is the Central Devices Structure
+    ![Central](/img/Central.png)
 
-1. ### SomeThing We should know.
+    * This is the Central algorithm 
+    ![Cent_algo](/img/Cent_algo.png)
+
+
+<h2 id="know">Something We should know<h/2>
     
     * println()     Prints data to the Serial ports as human-readable ASCII text  followed by a carriage return character (ASCII 13, or '\r')  and new line character (ASCII 10 or '\n').  
 
@@ -132,8 +147,7 @@
 
         AT+EXIT<CR+LF> &mdash;  Exit the AT Command Mode.
 
-
-1. ### Issues 
+<h2 id="issues">Issues</h2>
 
     1. What is that between the microcontroller(ATmega328P) and Bluetooth chip(CC2540);
     how to communicate between them
@@ -141,8 +155,7 @@
     2. How to code AT commands on the sketch in Arduino IDE?
 
 
-
-1. References
+<h2 id="references">References</h2>
 
     * https://www.dfrobot.com/wiki/index.php/Bluno\_SKU:DFR0267#Bluno\_Basic\_Demo  &mdash; AT lists.
 
