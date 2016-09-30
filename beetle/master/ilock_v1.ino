@@ -1,5 +1,36 @@
+/*
+   This program is for Central Bluno beetle bluetooth.
+
+Name        : ilock
+
+author      : Lim Jae Hwan
+
+purpose     : 1. Connection with peripheral devices
+              2. Switch devices in every 2 seconds
+
+first date  : 2016_09_30
+
+functions   : 1. Switch             : Switch devices
+                A. Connection       : Connect devices
+                B. Disconnection    : Disconnect devices
+              2. Setting.           : set the configuration of Bluno
+              3. Checking.          : Check the RSSI values.
+*/
+
+/* Beetle functions */
+void switch(void);
 
 
+
+
+void setup() {
+    Serial.begin(115200);
+}
+
+void loop() {
+
+}
+-----------------------------------------Referrence----------------------------
 
 const int ledBLE = 13;
 typedef enum {START, WAIT_AT, WAIT_RSSI, WAIT_EXIT, NORM_MODE, _TMP} state_type;
