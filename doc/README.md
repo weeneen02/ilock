@@ -13,9 +13,9 @@
     * This is the Picture our system.
     ![beetle](/img/Blunobeetle.png)
     * This is the Central Devices Structure
-    ![Central](/img/Central.png)
+    ![Central](/img/Central.jpg)
     * This is the Central algorithm 
-    ![Cent_algo](/img/Cent_algo.png)
+    ![Cent_algo](/img/Cent_algo.jpg)
 
 <h2 id="know">Something We should know</h2>
 
