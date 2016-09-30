@@ -21,7 +21,9 @@
     ![Cent_algo](/img/Cent_algo.png)
 
 
-<h2 id="know">Something We should know<h/2>
+<h2 id="know">Something We should know</h2>
+
+> It's about We should know in this project
     
     * println()     Prints data to the Serial ports as human-readable ASCII text  followed by a carriage return character (ASCII 13, or '\r')  and new line character (ASCII 10 or '\n').  
 
