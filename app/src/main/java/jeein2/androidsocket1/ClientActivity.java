@@ -112,7 +112,7 @@ public class ClientActivity extends Activity {
                                     }
                                 });
                                 //////////////////////////////////////////////////////////////////////////
-
+                              ///////////////////////////////////////
                             } catch (IOException e) {
                                 // TODO Auto-generated catch block
                                 e.printStackTrace();
