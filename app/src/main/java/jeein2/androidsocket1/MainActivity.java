@@ -8,7 +8,7 @@ import android.view.View;
 /**
  * Created by HANSUNG on 2016-09-30.
  */
-
+///////////////
 public class MainActivity extends Activity {
 
     @Override

@@ -131,7 +131,7 @@ public class ClientActivity extends Activity {
                 if(os==null){text_msg.setText("you didnt connet server...");
                     return;}   //서버와 연결되어 있지 않다면 전송불가..
 
-                //네트워크 작업이므로 Thread 생성
+                //네트워크 작업이므로 Thread 생성//
                 new Thread(new Runnable() {
 
                     @Override
