@@ -16,15 +16,148 @@ functions   : 1. Switch             : Switch devices
               2. Setting.           : set the configuration of Bluno
               3. Checking.          : Check the RSSI values.
 */
+typedef enum {START, LISTEN, WORK} c_state;       // Central statement.
+
+// When we read AT commend or Message from devices
+typedef enum {START, 
+    WAIT_AT, 
+    WAIT_RSSI, 
+    WAIT_VERSION, 
+    WAIT_BIND, 
+    WAIT_MESSAGE,
+    WAIT_EXIT, 
+    NORM_MODE, 
+    _TMP} state_type;
+
+typedef enum {
+
+/* Variant */
+state_type = START; 
+bool reading = false;
+
+String ATcomBuffer;        // from Serial monitor.
+Stirng 
+
+
 
 /* Beetle functions */
 void switch(void);
 
+/*
+   When you check this working with Serial moniter. 
+   It must be set with "no line ending"
+
+   
+ */
+void EnterAt(void){         // To Enter AT mode on Sketch.
+    delay(10);
+    Serial.print("+");
+    Serial.print("+");
+    Serial.print("+");
+
+    ATcomBuffer = "";
+
+    //state_type = WAIT_AT;   
+    // not change type..here.
+}
 
 
+/*
+   This function will get the reply from "+++" question.
+   w is parameter that shows which query is put in this function.
+   RSSI
+
+ */
+void WaitAT(w){
+    char c;
+    ATcomBuffer = "";       // init ATcomBuffer
+
+    while (Serial.available() > 0){
+        c = Serial.read();
+
+        if ( c != '\n' ){
+            ATcomBuffer += c;
+        }
+        ATcomBuffer += '\n';
+        Serial.print("Here :"+ATcomBuffer);
+
+        return;
+    }
+}
+
+/*
+        if (ATcomBuffer == 'E'){
+            reading = true;
+            ATcomBuffer = "";
+        }
+
+        if (reading){
+            ATcomBuffer += c;
+        }
+
+        else {  // Except for Enter AT mode. It could be a message from device
+                // ISSUE : when pairing with a device, if another device sends message
+                //         to Central??
+
+            TmpBuffer += c;
+        }
+
+        if (reading && ATcomBuffer == "Enter AT mode\r\n"){
+            // get into Enter AT mode
+
+            return;
+        }
+    
+        // just leave this space for the ISSUE
+    }
+
+    if (reading == false){
+        //error print
+        Serial.println(TmpBuffer);
+    }
+}
+*/
+
+/*
+   This function is helping to branch each state functions.
+
+   no return.
+*/
+void CheckState(void){
+    if ( state_type == START){
+        EnterAt();              
+    } else if ( state_type == WAIT_AT ){
+        WaitAT();       // wait for the answer about "+++" query or anything.
+    } else if ( state_type == WAIT_RSSI ){
+        WaitRSSI();
+    } else if ( state_type == WAIT_VERSION ){
+        WaitVersion();
+    } else if ( state_type == WAIT_BIND ){
+        WaitBind();
+    } else if ( state_type == WAIT_MESSAGE ){
+        WaitMessage();  // when message comes it works
+    } else if ( state_type == WAIT_EXIT ){
+        WaitExit();
+    } else if ( state_type == NORM_MODE ){
+        NormMode();
+    }
+}
 
 void setup() {
     Serial.begin(115200);
+
+    delay(10);
+
+    // init Central Beetle.
+    // 0. enter AT mode  
+    state_type = START;
+    CheckState();
+    // put the next value of what we are gonna query AT command onto state_type.
+
+    // 1. MAC 
+    // 2. 
+    
+
 }
 
 void loop() {
