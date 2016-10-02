@@ -15,7 +15,21 @@ functions   : 1. Switch             : Switch devices
                 B. Disconnection    : Disconnect devices
               2. Setting.           : set the configuration of Bluno
               3. Checking.          : Check the RSSI values.
+
+modified    : 2016-10-02            : branch feature 001 : beetle to beetle.
+                                    : We are gonna make Central and Peripheral
+                                    : with one code by using #define CENT, PERI
+                                    : So, I want you to compile with this, 
+                                    : Plz make sure that you set the ROLE in this sketch.
+
 */
+
+
+// CENTRAL OR PERIPHERAL. Choose!
+#define CENTRAL
+
+
+
 typedef enum {START, LISTEN, WORK} c_state;       // Central statement.
 
 // When we read AT commend or Message from devices
