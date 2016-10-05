@@ -22,161 +22,183 @@ modified    : 2016-10-02            : branch feature 001 : beetle to beetle.
                                     : So, I want you to compile with this, 
                                     : Plz make sure that you set the ROLE in this sketch.
 
+            : 2016-10-05            : We decided to make a function to handle AT commands 
+                                    : I made a function which sends AT commands and receives
+                                    : I am editting the loop part. 
+                                        The ISSUES are 1. how can I set the time limit.
+                                                       2. how can I handle the messages from devs
+
+                                    
 */
 
 
 // CENTRAL OR PERIPHERAL. Choose!
 #define CENTRAL
 
+typedef enum {AT_MODE, NORM_MODE} state;    // mode states.
+typedef enum {BUNKNOWN = 0, BEETLE, PHONE, RASPBERRY} devID;
+// This is peripheral info
+typdef struct obj {
+    devID id;                  
+    String mac;
+    int rssi;
+    //int time;
+    String message;
+}OBJ;
 
 
-typedef enum {START, LISTEN, WORK} c_state;       // Central statement.
-
-// When we read AT commend or Message from devices
-typedef enum {START, 
-    WAIT_AT, 
-    WAIT_RSSI, 
-    WAIT_VERSION, 
-    WAIT_BIND, 
-    WAIT_MESSAGE,
-    WAIT_EXIT, 
-    NORM_MODE, 
-    _TMP} state_type;
-
-typedef enum {
 
 /* Variant */
-state_type = START; 
-bool reading = false;
-
-String ATcomBuffer;        // from Serial monitor.
-Stirng 
+String retBuffer;       // from Serial monitor.
+OBJ peri[10] = {{BEETLE,"0xC4BE84DE3D1C",0,""},{BEETLE,"0xC4BE84E3A7E1", 0, ""},0};               // Peripheral's info
+int periCount = 0;
 
 
 
-/* Beetle functions */
-void switch(void);
-
-/*
-   When you check this working with Serial moniter. 
-   It must be set with "no line ending"
-
-   
- */
-void EnterAt(void){         // To Enter AT mode on Sketch.
-    delay(10);
-    Serial.print("+");
-    Serial.print("+");
-    Serial.print("+");
-
-    ATcomBuffer = "";
-
-    //state_type = WAIT_AT;   
-    // not change type..here.
-}
-
-
-/*
-   This function will get the reply from "+++" question.
-   w is parameter that shows which query is put in this function.
-   RSSI
-
- */
-void WaitAT(w){
-    char c;
-    ATcomBuffer = "";       // init ATcomBuffer
-
-    while (Serial.available() > 0){
-        c = Serial.read();
-
-        if ( c != '\n' ){
-            ATcomBuffer += c;
-        }
-        ATcomBuffer += '\n';
-        Serial.print("Here :"+ATcomBuffer);
-
-        return;
-    }
-}
-
-/*
-        if (ATcomBuffer == 'E'){
-            reading = true;
-            ATcomBuffer = "";
-        }
-
-        if (reading){
-            ATcomBuffer += c;
-        }
-
-        else {  // Except for Enter AT mode. It could be a message from device
-                // ISSUE : when pairing with a device, if another device sends message
-                //         to Central??
-
-            TmpBuffer += c;
-        }
-
-        if (reading && ATcomBuffer == "Enter AT mode\r\n"){
-            // get into Enter AT mode
-
-            return;
-        }
-    
-        // just leave this space for the ISSUE
-    }
-
-    if (reading == false){
-        //error print
-        Serial.println(TmpBuffer);
-    }
-}
-*/
-
-/*
-   This function is helping to branch each state functions.
-
-   no return.
-*/
-void CheckState(void){
-    if ( state_type == START){
-        EnterAt();              
-    } else if ( state_type == WAIT_AT ){
-        WaitAT();       // wait for the answer about "+++" query or anything.
-    } else if ( state_type == WAIT_RSSI ){
-        WaitRSSI();
-    } else if ( state_type == WAIT_VERSION ){
-        WaitVersion();
-    } else if ( state_type == WAIT_BIND ){
-        WaitBind();
-    } else if ( state_type == WAIT_MESSAGE ){
-        WaitMessage();  // when message comes it works
-    } else if ( state_type == WAIT_EXIT ){
-        WaitExit();
-    } else if ( state_type == NORM_MODE ){
-        NormMode();
-    }
-}
 
 void setup() {
-    Serial.begin(115200);
 
+    Serial.begin(115200);
     delay(10);
 
-    // init Central Beetle.
-    // 0. enter AT mode  
-    state_type = START;
-    CheckState();
-    // put the next value of what we are gonna query AT command onto state_type.
+    /* Enter AT mode */
+    entATcom();        
 
-    // 1. MAC 
-    // 2. 
+    /* print infos */
+#ifdef PERIPHERAL 
+    /* set the role, peripheral */
+    putATcom("AT+SETTING=DEFPERIPHERAL");
+    Serial.print("Is that DEFPERIPHERAL? "+retBuffer);
+#endef
+
+#ifdef CENTRAL
+    /* set the role, central */
+    putATcom("AT+SETTING=DEFCENTRAL");
+    Serial.print("Is that DEFCENTRAL? "+retBuffer);
+#endef
+
+    /* print AT version */
+    putATcom("AT+VERSION=?");   
+    Serial.print("version = "+retBuffer);
+
+    /* print current UART */
+    putATcom("AT+UART=?");      
+    Serial.print("uart = "+retBuffer);
+
+    /* print current CMODE */
+    putATcom("AT+CMODE=?"); 
+    Serial.print("cmode = "+retBuffer);
+
+    /* print This device's mac addr */
+    putATcom("AT+MAC=?");       
+    Serial.print("mac = "+retBuffer);
+
+    /* check this setting */
+    putATcom("AT+SETTING=?");
+    Serial.print("setting = "+retBuffer);
     
 
 }
 
 void loop() {
+    //while looping 
+#ifdef CENTRAL
+    /* Central's rules */
+    /*
+       At Central, Checking dev every given time.
+       time interrupt. if time is out. stopping send or receiving 
+                        message.
+
+       1. binding
+       2. restart.  ISSUE : what if it restarts this dev... not bluetooth.
+       3. check RSSI.
+       4. listening.  get the message from current bound dev.
+                if time out 
+                    next peri
+                else
+                    keep listening.
+     */
+
+
+
+#endef
+
+#ifdef PERIPHERAL
+
+    /* 
+       When the button pressed, send the message to Central.
+       Which pin is good for button?
+
+
+    1. check RSSI
+        if not 0
+            send message
+    2. return.
+
+    */
+#endef
 
 }
+
+
+
+
+/* Beetle functions */
+void entAT(void){
+    char chr = 0;
+    delay(10);
+
+    Serial.print("+");
+    Serial.print("+");
+    Serial.print("+");
+
+    while (Serial.available() > 0){
+        chr = Serial.read();
+        retBuffer += chr;
+    }
+    
+    if (retBuffer == "Enter AT mode\r\n"){
+        Serial.println("We enter AT");
+        state = AT_MODE;
+        return;
+    }
+    
+    else {
+        state = NORM_MODE;
+        Serial.println("Couldn't Enter AT");
+    }
+}
+
+void extAT(void){
+    delay(10);
+    retBuffer = "";
+    state = NORM_MODE;
+    Serial.println("AT_RESTART");  // Restart bluetooth.
+    //Serial.println("AT_EXIT");
+}
+
+void putATcom(String a)
+{
+    char chr = 0;
+
+    if (state == AT_MODE){
+        Serial.println(a);
+        delay(10);
+
+        // get the answer
+        while (Serial.available() > 0){
+            if ( (chr = Serial.read() != '\n') ) ;
+            retBuffer += chr;
+        }
+        retBuffer += '\n';
+    }
+
+    else {
+        Serial.println("Not AT_MODE");
+    }
+}
+
+
 -----------------------------------------Referrence----------------------------
 
 const int ledBLE = 13;
