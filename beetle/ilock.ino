@@ -35,23 +35,40 @@ modified    : 2016-10-02            : branch feature 001 : beetle to beetle.
 // CENTRAL OR PERIPHERAL. Choose!
 #define CENTRAL
 
+#ifdef  PERIPHERAL
+#define BUTTON_PIN  3
+#endef
+
+
+
+
 typedef enum {AT_MODE, NORM_MODE} state;    // mode states.
-typedef enum {BUNKNOWN = 0, BEETLE, PHONE, RASPBERRY} devID;
+typedef enum {JONE_IN, JONE_OUT} zone;
+typedef enum {BUNKNOWN = 0, BEETLE = 1, PHONE = 2, RASPBERRY = 3} devID;
 // This is peripheral info
 typdef struct obj {
     devID id;                  
     String mac;
-    int rssi;
+    int rssi;       // convert string to int?
     //int time;
     String message;
 }OBJ;
 
 
 
+
 /* Variant */
 String retBuffer;       // from Serial monitor.
-OBJ peri[10] = {{BEETLE,"0xC4BE84DE3D1C",0,""},{BEETLE,"0xC4BE84E3A7E1", 0, ""},0};               // Peripheral's info
+OBJ peri[10] = {{BEETLE,"0xC4BE84DE3D1C", 0, ""},
+                {BEETLE,"0xC4BE84E3A7E1", 0, ""},0};               // Peripheral's info
+OBJ me = {BEETLE,"",0,""};
 int periCount = 0;
+
+// for interrupt 
+const byte ledPin = 5;
+const byte interruptPin = 2;
+volatile byte state = LOW;
+
 
 
 
@@ -66,6 +83,16 @@ void setup() {
 
     /* print infos */
 #ifdef PERIPHERAL 
+    
+    /* Interrupt pins */
+    pinMode(ledPin, OUTPUT);
+    pinMode(interruptPin, INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(interruptPin), blink, CHANGE);
+
+    /* Set bind.*/
+    putATcom("AT+BIND=0x.....");
+    Serial.print("bind is? "+retBuffer);
+
     /* set the role, peripheral */
     putATcom("AT+SETTING=DEFPERIPHERAL");
     Serial.print("Is that DEFPERIPHERAL? "+retBuffer);
@@ -91,11 +118,14 @@ void setup() {
 
     /* print This device's mac addr */
     putATcom("AT+MAC=?");       
+    me.mac = retBuffer;
     Serial.print("mac = "+retBuffer);
 
     /* check this setting */
     putATcom("AT+SETTING=?");
     Serial.print("setting = "+retBuffer);
+
+
     
 
 }
@@ -124,18 +154,51 @@ void loop() {
 #endef
 
 #ifdef PERIPHERAL
+   
 
     /* 
        When the button pressed, send the message to Central.
        Which pin is good for button?
 
+    0. state == open?
 
-    1. check RSSI
+    1. restart
+
+    2. check RSSI
         if not 0
             send message
-    2. return.
+    3. return.
+
+    when button clicked, restart, and rssi check. ok?
+        
+    the structure of the message.
+    
+    1. MAC
+
+
+    =-----------=
+    to sync with central. we need to keep this link long time..
 
     */
+
+    // state check
+    if ( zone == ZONE_IN ){
+
+        // light green
+
+        putATcom("AT+RSSI=?");
+        if (retBuffer != "-000\r\n"){
+            Serial.println("0000" + me.mac + me.id + "open" + "0000");
+        }
+
+
+    }
+
+    else if ( zone == ZONE_OUT ){
+        // light red
+
+    }
+
 #endef
 
 }
@@ -196,6 +259,21 @@ void putATcom(String a)
     else {
         Serial.println("Not AT_MODE");
     }
+}
+
+
+/* When interrupt ocurrs*/
+void blink() {
+
+    // here! when button clicked what's gonna do?
+
+    /*
+       1. restart.
+       2. check rssi.
+            zone setting.
+    */
+
+    
 }
 
 
