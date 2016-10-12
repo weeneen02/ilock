@@ -20,15 +20,40 @@ modified    : 2016-10-02            : branch feature 001 : beetle to beetle.
                                     : We are gonna make Central and Peripheral
                                     : with one code by using #define CENT, PERI
                                     : So, I want you to compile with this, 
-                                    : Plz make sure that you set the ROLE in this sketch.
+                                    : Plz make sure that you set the ROLE in 
+                                      this sketch.
 
-            : 2016-10-05            : We decided to make a function to handle AT commands 
-                                    : I made a function which sends AT commands and receives
+            : 2016-10-05            : We decided to make a function to handle 
+                                      AT commands 
+                                    : I made a function which sends AT commands 
+                                      and receives
                                     : I am editting the loop part. 
-                                        The ISSUES are 1. how can I set the time limit.
-                                                       2. how can I handle the messages from devs
+                                        The ISSUES are 1. how can I set the time
+                                                          limit.
+                                                       2. how can I handle the 
+                                                          messages from devs
 
+            : 2016-10-12            : It was so late.
+                                    : We need to check that beetle's connected
+                                      or not. I thought AT+RSSI could check this
+                                      but it was wrong. Mento said that "RSSI 
+                                      is not a function to check, It's just let
+                                      you know how long devices are. So, I need
+                                      one routine to deal with this problem. 
+                                      How about sending data to the arduino I 
+                                      think it's already connected. Maybe the 
+                                      device will return data if connected.
+function brief  : 
+1. putATcom     : the parameter is String that has a query. and this function 
+                  doesn't use return. global variable "retBuffer" has the 
+                  return value which is string.
+
+2. entAT        : Get into AT mode. 
+3. extAT        : Exit AT mode.
                                     
+
+
+when restarted;
 */
 
 
@@ -37,7 +62,7 @@ modified    : 2016-10-02            : branch feature 001 : beetle to beetle.
 
 #ifdef  PERIPHERAL
 #define BUTTON_PIN  3
-#endef
+#endif
 
 
 
@@ -45,6 +70,8 @@ modified    : 2016-10-02            : branch feature 001 : beetle to beetle.
 typedef enum {AT_MODE, NORM_MODE} state;    // mode states.
 typedef enum {JONE_IN, JONE_OUT} zone;
 typedef enum {BUNKNOWN = 0, BEETLE = 1, PHONE = 2, RASPBERRY = 3} devID;
+
+
 // This is peripheral info
 typdef struct obj {
     devID id;                  
@@ -60,7 +87,7 @@ typdef struct obj {
 /* Variant */
 String retBuffer;       // from Serial monitor.
 OBJ peri[10] = {{BEETLE,"0xC4BE84DE3D1C", 0, ""},
-                {BEETLE,"0xC4BE84E3A7E1", 0, ""},0};               // Peripheral's info
+                {BEETLE,"0xC4BE84E3A7E1", 0, ""},0};        // Peripheral's info
 OBJ me = {BEETLE,"",0,""};
 int periCount = 0;
 
@@ -96,13 +123,13 @@ void setup() {
     /* set the role, peripheral */
     putATcom("AT+SETTING=DEFPERIPHERAL");
     Serial.print("Is that DEFPERIPHERAL? "+retBuffer);
-#endef
+#endif
 
 #ifdef CENTRAL
     /* set the role, central */
     putATcom("AT+SETTING=DEFCENTRAL");
     Serial.print("Is that DEFCENTRAL? "+retBuffer);
-#endef
+#endif
 
     /* print AT version */
     putATcom("AT+VERSION=?");   
@@ -151,7 +178,7 @@ void loop() {
 
 
 
-#endef
+#endif
 
 #ifdef PERIPHERAL
    
@@ -199,7 +226,7 @@ void loop() {
 
     }
 
-#endef
+#endif
 
 }
 
