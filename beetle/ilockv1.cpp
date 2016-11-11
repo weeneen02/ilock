@@ -1,3 +1,8 @@
+/*
+   2016-11-12   :   Fixing getRole function.
+ */
+
+
 
 #define CENTRAL
 #define MAX 10
@@ -118,6 +123,9 @@ class Node {
         }
         
         void getRole(void){
+            /*
+               
+             */
 
         }
 
