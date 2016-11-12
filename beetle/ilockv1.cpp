@@ -18,17 +18,53 @@ class Obj {
     private:
         Node* head;
         Node* tail;
+        Node* current;
+        int state;
 
     public :
         Obj(void){
-            head = NULL;
-            tail = NULL;
+            head = new Node();
+            tail = head;
+            current = head;
+            state = 0;
         }
 
         ~Obj(void){
 
         }
 
+
+        void done(void){
+            this state = 1;
+
+        }
+
+        int getState(void){
+            return state;
+
+        }
+
+        void addNode(String id, String mac){
+            Node* add = new Node(id, mac); 
+            Node* temp = NULL;
+            int i;
+            for ( temp = head; temp->next != NULL; temp = temp->next );
+            temp->next = add;
+            tail = add;
+        }
+
+        Node* getCurrentNode(void){
+            return current;
+        }
+
+        Node* getNextDev(void){
+            if ( current == tail ){
+                current = head;
+                return current;
+            } else {
+                return (current = current->next);
+            }
+        }
 };
 
 
@@ -43,10 +79,14 @@ class Node {
         Node* next;
     
     public:
-        Node(void) {
+        Node(String id, String mac) {
             state = NORM_MODE;
-
-
+            this.id = id;
+            this.mac = mac;
+            this.rssi = "";
+            this.message = "";
+            this.modeState = NORM_MODE;
+            this->next = NULL;
         }
 
         ~Node(void) {
@@ -124,12 +164,39 @@ class Node {
         
         void getRole(void){
             /*
-               
              */
 
         }
 
 
 };
+
+Obj obj();
+
+
+void setup(void){
+     
+    Serial.begin(115200);
+    obj.addNode("1", /*MAC*/);
+    obj.addNode("2", /*MAC*/);
+
+}
+
+void loop(void){
+    Node* temp = NULL;
+
+    if (obj.getState() == 0){
+
+    } else {
+        temp = obj.getCurrentNode(); 
+        temp->enterAT();
+        temp->getRssi();
+        temp->exitAT();
+        Serial.println(temp->rssi);
+        obj.done();
+        obj.getNextDev();
+    }
+}
+
 
 
