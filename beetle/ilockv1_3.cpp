@@ -63,6 +63,7 @@ class Node {
         Serial.print("+");
         Serial.print("+");
         Serial.print("+");
+        state = AT_MODE;
 
         delay(20);
         if ( state == AT_MODE )
