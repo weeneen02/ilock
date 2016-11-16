@@ -1,8 +1,8 @@
 /*
    2016-11-12   :   Fixing getRole function.
    2016-11-13   :   Compile susccess.
-   2016-11-13   :   New beetle.. 
-   Let's make it. 
+   2016-11-13   :   New beetle..
+   2016-11-15   :   this code is working well.
  */
 
 
@@ -12,6 +12,7 @@
 #ifdef  PERIPHERAL
 #define BUTTON_PIN 3
 #endif
+
 
 
 typedef enum {AT_MODE = 0, NORM_MODE = 1} modeState;
@@ -55,6 +56,7 @@ class Node {
 
     void enterAT(void) {
         int reading = 0;
+
         char chr;
         String buf = "";
 
@@ -63,29 +65,32 @@ class Node {
         Serial.print("+");
         Serial.print("+");
         Serial.print("+");
-        state = AT_MODE;
+
 
         delay(20);
-        if ( state == AT_MODE )
+        while (1) {
             while ( Serial.available() > 0 ) {
                 chr = Serial.read();
-                if ( chr == 'E' ){
+                if ( chr == 'E' ) {
                     buf = "";
                     reading = 1;
                 }
-                if ( reading ){
+                if ( reading ) {
                     buf += chr;
                 }
 
                 if ( reading && buf == "Enter AT Mode\r\n" ) {
                     state = AT_MODE;
                     reading = 0;
+                    return;
+                }
+
+                if (state == AT_MODE) {
+
+                } else {
+                    //Serial.println("couldn't enter at mode");
                 }
             }
-        if (state == AT_MODE){
-
-        } else {
-            Serial.println("couldn't enter at mode");
         }
     }
 
@@ -100,7 +105,7 @@ class Node {
 
             while ( Serial.available() > 0 ) {
                 chr = Serial.read();
-                if ( chr == 'O'){
+                if ( chr == 'O') {
                     reading = 1;
                     buf = "";
                 }
@@ -119,7 +124,7 @@ class Node {
         } else {
             Serial.println("Error Not AT mode in exitAt");
         }
-        if ( state == NORM_MODE ){
+        if ( state == NORM_MODE ) {
 
         } else {
             Serial.println("error occured wrong answer from at_exit");
@@ -137,13 +142,13 @@ class Node {
 
             while ( Serial.available() > 0 ) {
                 chr = Serial.read();
-                if ( chr == '-' ){
+                if ( chr == '-' ) {
                     reading = 1;
                     buf = "";
                 }
-                if ( reading ){
+                if ( reading ) {
                     buf += chr;
-                }          
+                }
                 if ( reading && buf.length() == 6 ) {
                     rssi = buf;
                     reading = 0;
@@ -166,11 +171,11 @@ class Node {
 
             while (Serial.available() > 0 ) {
                 chr = Serial.read();
-                if ( chr == 'O' ){
+                if ( chr == 'O' ) {
                     buf = "";
                     reading = 1;
                 }
-                if ( reading ){
+                if ( reading ) {
                     buf += chr;
                 }
 
@@ -195,17 +200,17 @@ class Node {
             if ( CorP == 0 ) {
                 Serial.println("AT+ROLE=ROLE_CENTRAL");
             } else {
-                Serial.println("AT+ROLE=ROLE_PERIPHARAL");
+                Serial.println("AT+ROLE=ROLE_PERIPHERAL");
             }
             delay(10);
 
             while ( Serial.available() > 0 ) {
                 chr = Serial.read();
-                if ( chr == 'O' ){
+                if ( chr == 'O' ) {
                     buf = "";
                     reading = 1;
                 }
-                if ( reading ){
+                if ( reading ) {
                     buf += chr;
                 }
                 if ( buf == "OK\r\n") {
@@ -280,13 +285,14 @@ class Obj {
         }
 };
 
+
+#ifdef CENTRAL
 Obj obj;
 void setup(void) {
     Serial.begin(115200);
     obj.addNode("1", "0xC4BE84DE2795");
 
     //obj.addNode("2", /*MAC*/);
-
 }
 
 void loop(void) {
@@ -306,10 +312,59 @@ void loop(void) {
         temp->getRssi();
         temp->exitAT();
 
+
+        /*if rssi is over 0 (e.g connected), 
+         
+         listen... 
+         check... message it got. 
+         
+
+         */
+
+
+        Serial.println("\r\n<<<");
         Serial.println(temp->getRssi());
+        Serial.println(">>>\r\n");
+        Serial.flush();
+
         obj.done();
         obj.getNextDev();
     }
 }
+#endif
 
+
+
+#ifdef PERIPHERAL
+Obj obj;
+void setup(void){
+   Serial.begin(115200);
+   obj.addNode("1", "0xC4BE84E3A786");  /*Central MAC*/
+
+}
+
+void loop(void){
+    Node* temp = NULL;
+
+    /* when button clicked. start? */
+    if (obj.getState() == 1){
+
+    } else {
+        temp = obj.getCurrentNode();
+        
+        temp->enterAT();
+        temp->setRole(1);
+        temp->setBind();
+        temp->exitAT();
+
+        /*
+           send data.
+
+         */
+
+        obj.done();
+        obj.getNextDev();
+    }
+}
+#endif
 
