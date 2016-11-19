@@ -410,6 +410,9 @@ void loop(void) {
             /* Open 이라는 단어가 있을 때. */
             if ( readBuf.indexOf("open") ){
                 /*open door.*/
+                
+                /* Servo motor 예제가 onenote에 있음 (sweep)*/
+
                 bindOrWait = 0;
                 obj.getNextDev();
                 break;
