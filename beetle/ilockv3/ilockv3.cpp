@@ -1,24 +1,34 @@
+/*
+   현재 파란불만 계속 들오는 상황.
+   첫번째에서는 잘 돌아감. 두번째부터 잘 안되...
+ */
+
+
+
+#include<Servo.h>
+
 
 #define CENTRAL
 #define MAX 10
+#define SETTIME 10000000
 
 #ifdef  PERIPHERAL
 #define BUTTON_PIN 3
 #endif
 
 /* Node State*/
-typedef enum {AT_MODE = 0, NORM_MODE = 1} modeState;    
-modeState at_state = NORM_MODE;    
+typedef enum {AT_MODE = 0, NORM_MODE = 1} modeState;
+modeState at_state = NORM_MODE;
 
 int bindOrWait = 0;
 
 /*
    Node는 각각 연결하고자 하는 맥 주소, id, rssi, message등을 가지고 있다.
-   Node는 링크 리스트 형식으로 되어있는데 그 이유는 CENTRAL의 경우 여러가지 
+   Node는 링크 리스트 형식으로 되어있는데 그 이유는 CENTRAL의 경우 여러가지
    Devices를 각각 연결해야 하기 때문에.
-   
+
  */
-class Node {        
+class Node {
     friend class Obj;
 
     private:
@@ -51,8 +61,8 @@ class Node {
 
     /*
        ATmode에 진입한다. 이 함수 안에서 응답까지 받는다.
-reading : the variable to check the start of the correct answer. 
-          If the first letter is correct, it will be set the value 1.
+reading : the variable to check the start of the correct answer.
+If the first letter is correct, it will be set the value 1.
 
 chr     : the variable for Serial.read(). It has the one letter from the function.
 buf     : This is the buffer to save characters from read().
@@ -78,7 +88,7 @@ buf     : This is the buffer to save characters from read().
                두번째부터는 while(1) 문을 빠져나오질 못한다. 그 이유는 알수가 없음..
 
              */
-            while(1){
+            while (1) {
                 while ( Serial.available() > 0 ) {
                     chr = Serial.read();
                     if ( chr == 'E' ) {
@@ -89,7 +99,7 @@ buf     : This is the buffer to save characters from read().
                         buf += chr;
                     }
 
-                    if ( reading && (buf == "Enter AT Mode\r\n" || buf.indexOf("Enter AT Mode\r\n"))) {
+                    if ( reading && buf.indexOf("Enter AT Mode\r\n") >= 0 ) {
                         /* 진입된 응답값을 가지고 있으면 AT_MODE로 상태변경.*/
                         at_state = AT_MODE;
                         reading = 0;
@@ -101,7 +111,7 @@ buf     : This is the buffer to save characters from read().
     }
 
     /*
-       AT 에서 나가기 위한 함수. 
+       AT 에서 나가기 위한 함수.
        역시 while문에 에러가 생길 수있다.
      */
     int exitAT(void) {
@@ -172,7 +182,7 @@ buf     : This is the buffer to save characters from read().
     /*
        바인드를 설정해주는 함수.
      */
-    void setBind() {
+    int setBind() {
         int reading = 0;
         char chr;
         String buf = "";
@@ -180,20 +190,27 @@ buf     : This is the buffer to save characters from read().
         if ( at_state == AT_MODE ) {
             Serial.println("AT+BIND=" + mac);
 
+
             while (1) {
                 while (Serial.available() > 0 ) {
                     chr = Serial.read();
-                    if ( chr == 'O' ) {
-                        buf = "";
-                        reading = 1;
-                    }
-                    if ( reading ) {
-                        buf += chr;
-                    }
+                    /*
+                       if ( chr == 'O' ) {
+                       buf = "";
+                       reading = 1;
+                       }
+                       if ( reading ) {
+                       buf += chr;
+                       }
 
-                    if ( reading && buf == "OK\r\n" ) {
-                        reading = 0;
-                        return;
+                       if ( reading && buf.indexOf("OK\r\n") >= 0 ) {
+                       reading = 0;
+                       return;
+                       }
+                     */
+                    buf += chr;
+                    if ( buf.indexOf("OK\r\n") >= 0 ) {
+                        return 0;
                     }
                 }
             }
@@ -315,7 +332,7 @@ class Obj {
 
         /*
            Node의 다음으로 이동할때.
-           그 다음 노드를 출력하고, 만약 끝이면(tail)이면, 
+           그 다음 노드를 출력하고, 만약 끝이면(tail)이면,
            다시 head를 가리키도록 한다.
          */
         Node* getNextDev(void) {
@@ -325,16 +342,17 @@ class Obj {
                 current = head;
                 return current;
             } else {
-                return (current = current->next);
+                current = current->next;
+                return current;
             }
         }
 
-        void restartAT(void){
+        void restartAT(void) {
 
-            if ( state == AT_MODE ){
-                state = NORM_MODE;
+            if ( state == AT_MODE ) {
                 Serial.println("AT+RESTART");
                 delay(10);
+                state = NORM_MODE;
 
                 /* answer is needed?*/
 
@@ -353,21 +371,44 @@ void(* resetFunc)(void) = 0;
 unsigned long t1, t2;   /* these are for timers.*/
 String readBuf = "";    /* read buffer for another arduino.*/
 Obj obj;
+int pos = 0;
+Servo myservo;
+
+void openDoor(void) {
+
+    for ( pos = 0; pos <= 180; pos += 1) {
+        myservo.write(pos);
+        delay(15);
+    }
+    for ( pos = 180; pos >= 0; pos -= 1) {
+        myservo.write(pos);
+        delay(15);
+    }
+}
+
+int timeout = 0;
+
+
 void setup(void) {
     Serial.begin(115200);
-    
+
     /*
        pin mode open
      */
     pinMode(2, OUTPUT);     /* Debug led pin*/
-    pinMode(3, OUTPUT);     /* Debug led pin*/
+
     pinMode(4, OUTPUT);     /* Debug led pin*/
     pinMode(5, OUTPUT);     /* Button pin */
+
+    myservo.attach(3);
 
     /*
        add mac address.
      */
     obj.addNode("1", "0xC4BE84DE2795");
+    obj.addNode("2", "0xCABABABABABA");
+    obj.addNode("3", "0xAAAAAAAAAAAA");
+    obj.addNode("4", "0xBBBBBBBBBBBB");
     //obj.addNode("2", /*MAC*/);
 
 }
@@ -381,53 +422,70 @@ void loop(void) {
     temp = obj.getCurrentNode();
     char chr;
 
-    
-    if ( bindOrWait == 0 ){
-        if ( temp->enterAT() == 0 ){
+
+    if ( bindOrWait == 0 ) {
+        if ( temp->enterAT() == 0 ) {
             digitalWrite(2, HIGH);
             digitalWrite(4, LOW);  /*blue*/
+
+            /*문제 발생 setbind를 못나오는거 같음 두번째에서.*/
+            if ( temp->setBind() == 0 ) {
+                digitalWrite(2, HIGH);
+                digitalWrite(4, HIGH);
+            }
         }
 
-        temp->setBind();
-        
-        if ( temp->exitAT() == 0 ){
-            digitalWrite(2, LOW);  /*green*/
-            digitalWrite(4, LOW);
+        if ( temp->exitAT() == 0 ) {
+            bindOrWait = 1;
+            readBuf = "";
         }
 
         /*restart*/
-        bindOrWait = 1;
-        temp->restartAT();
+        /*
+           bindOrWait = 1;
+           obj.restartAT();
+         */
+
+        Serial.flush();
 
         delay(1000);
         /*LED set.*/
 
-    } else {
-        /* check connection. */
+        t1 = micros();
 
+    } else if (bindOrWait == 1) {
+        /* check connection. */
 
         digitalWrite(4, HIGH);
         digitalWrite(2, LOW);
 
-        readBuf = "";
-        t1 = micros();
-        while ( Serial.available() > 0 ){
-            chr = Serial.read();
-            readBuf += chr;
 
-            /* Open 이라는 단어가 있을 때. */
-            if ( readBuf.indexOf("open") ){
-                /*open door.*/
-                break;
-            }
-            
-            /* 10 초 이상일때.*/
-            if ( micros() - t1 > 10000000 ){
-                break;
+
+        //t1 = micros();
+        while (1) {
+            while (Serial.available() > 0) {
+                chr = Serial.read();
+                readBuf += chr;
+
+                /* Open 이라는 단어가 있을 때. */
+                if ( readBuf.indexOf("open") >= 0 ) {
+                    /*open door.*/
+                    openDoor();
+                    readBuf = "";
+                    bindOrWait = 0;
+                    obj.getNextDev();
+                    return;
+                }
+
+                /* 10 초 이상일때.*/
+                if ( micros() - t1 > SETTIME ) {
+                    bindOrWait = 0;
+                    obj.getNextDev();
+                    return;
+
+                }
             }
         }
-        bindOrWait = 0;
-        obj.getNextDev();
     }
 }
 #endif
@@ -447,14 +505,12 @@ void setup(void) {
 void loop(void) {
     buttonState = digitalRead(buttonPin);
 
-    if (buttonState == HIGH ){
+    if (buttonState == HIGH ) {
         Serial.write("open");
         Serial.write("open");
         Serial.write("open");
-    } else{
-        
+    } else {
+
     }
 }
 #endif
-
-
