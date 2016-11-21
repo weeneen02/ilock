@@ -5,6 +5,8 @@
 
    웃긴게 지금 시리얼 모니터를 꺼야 돌아간다는 것..
    아마 시리얼 모니터 키면서 뭔가 엉키는 듯...
+   
+   가장 최근..
  */
 
 
@@ -453,7 +455,7 @@ void loop(void) {
         digitalWrite(4, HIGH);
         digitalWrite(2, LOW);
 
-        while (1) {
+        while ( micros() - t1 <= SETTIME ){
             while (Serial.available() > 0) {
                 chr = Serial.read();
                 readBuf += chr;
@@ -467,16 +469,10 @@ void loop(void) {
                     obj.getNextDev();
                     return;
                 }
-
-                /* 10 초 이상일때.*/
-                if ( micros() - t1 > SETTIME ) {
-                    bindOrWait = 0;
-                    obj.getNextDev();
-                    return;
-
-                }
             }  /* while Serial available end */
-        }   /* while (1) end */
+        }   /* while ( > 10sec) end */
+        bindOrWait = 0;
+        obj.getNextDev();
     }   /* bindOrWait end. */
 }
 #endif
