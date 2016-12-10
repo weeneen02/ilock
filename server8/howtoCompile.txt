@@ -1,0 +1,1 @@
+sudo gcc test.c -o hello -l wiringPi -DRaspberryPi

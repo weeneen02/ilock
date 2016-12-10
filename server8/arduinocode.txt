@@ -1,0 +1,19 @@
+char cTemp;
+String sReal = "";
+ 
+void setup()
+{
+  Serial.begin(9600);
+}
+void loop()
+{
+    while(Serial.available()){
+      cTemp = Serial.read();
+      sReal.concat(cTemp);
+      if(cTemp=='\n')
+      {
+        Serial.print(sReal);
+        sReal="";
+      }
+    }
+}
