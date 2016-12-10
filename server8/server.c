@@ -108,7 +108,7 @@ int   main( void)
 		}
 
 		// 여기서부터 기초 세팅이 시작되었고 이제 메뉴를 선택하자... 1 서버 돌리기, 2 폰넘버를 새로 추가하기 3 블루노 추가하기 4 프로그램 끄기.. 봐가면서 삭제도
-		printf("what do you want? please typing your command\n");
+		printf("what do you want? please type your command\n");
 		printf("1.server launch continue.\n");
 		printf("2.add new phoneNumber..\n");
 		printf("3.add new BlunoDevice..\n");
