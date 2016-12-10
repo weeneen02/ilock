@@ -1,3 +1,11 @@
+/*
+   should add..
+   1. button interrupt.
+   2. timer value changes.
+   3. 
+ */
+
+
 #include<Servo.h>
 #define CENTRAL
 
