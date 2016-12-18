@@ -1,0 +1,45 @@
+
+
+
+
+
+
+
+
+
+link or not.
+two ways.
+
+1. not
+check family, password or key.
+
+    send mode : State If Door is open -> 0
+            If Door is close -> 1;
+    
+    link on.
+
+2. link.
+    
+    while Serial available
+        
+        if trigger
+            if mode == 0
+                mode = 1;
+                closeDoor.
+            if mode == 1
+                mode = 0;
+                openDoor.
+    end.
+
+
+
+----
+
+button triger switch on.
+
+timer < 3 secs?
+
+if 
+
+
+
